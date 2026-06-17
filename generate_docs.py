@@ -1,13 +1,35 @@
+import logging
 import os
-from docx import Document
-from docx.shared import Pt, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+import sys
+
+try:
+    from docx import Document
+    from docx.shared import Pt, Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+except ImportError:
+    sys.exit(
+        "Error: la librería 'python-docx' no está instalada.\n"
+        "Instálala con:  pip install python-docx"
+    )
+
+logger = logging.getLogger(__name__)
+
 
 def add_heading(doc, text, level=1):
     h = doc.add_heading(text, level=level)
     h.alignment = WD_ALIGN_PARAGRAPH.LEFT
 
+
 def generate_doc():
+    """Genera Documentacion_SGSA.docx junto al script.
+
+    Returns:
+        str: Ruta absoluta del archivo generado.
+
+    Raises:
+        OSError: Si no se puede escribir el archivo de salida.
+        RuntimeError: Si la generación del documento falla.
+    """
     doc = Document()
     
     # Title
@@ -144,9 +166,29 @@ erDiagram
 """
     doc.add_paragraph(mermaid_er)
 
-    output_path = os.path.join(os.path.dirname(__file__), 'Documentacion_SGSA.docx')
-    doc.save(output_path)
-    print(f'Documento generado en: {output_path}')
+    output_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        'Documentacion_SGSA.docx',
+    )
+
+    try:
+        doc.save(output_path)
+    except OSError as exc:
+        raise OSError(
+            f"No se pudo guardar el documento en '{output_path}': {exc}"
+        ) from exc
+
+    logger.info("Documento generado en: %s", output_path)
+    return output_path
+
 
 if __name__ == '__main__':
-    generate_doc()
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(levelname)s: %(message)s',
+    )
+    try:
+        generate_doc()
+    except Exception as exc:
+        logger.error("%s", exc)
+        sys.exit(1)
