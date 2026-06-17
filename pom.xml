@@ -143,6 +143,12 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
+                            <!-- Excluimos capas que no son logica de negocio testeable por unidad -->
+                            <excludes>
+                                <exclude>mx/uaemex/arquitectura/controller/**</exclude>
+                                <exclude>mx/uaemex/arquitectura/dao/**</exclude>
+                                <exclude>mx/uaemex/arquitectura/model/**</exclude>
+                            </excludes>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
@@ -153,12 +159,6 @@
                                             <minimum>0.80</minimum>
                                         </limit>
                                     </limits>
-                                    <!-- Excluimos capas que no son logica de negocio testeable por unidad -->
-                                    <excludes>
-                                        <exclude>mx/uaemex/arquitectura/controller/**</exclude>
-                                        <exclude>mx/uaemex/arquitectura/dao/**</exclude>
-                                        <exclude>mx/uaemex/arquitectura/model/**</exclude>
-                                    </excludes>
                                 </rule>
                             </rules>
                         </configuration>
