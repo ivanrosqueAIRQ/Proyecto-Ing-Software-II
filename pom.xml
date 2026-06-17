@@ -24,6 +24,19 @@
     </properties>
 
     <dependencies>
+        
+      <dependency>
+    <groupId>jakarta.platform</groupId>
+    <artifactId>jakarta.jakartaee-api</artifactId>
+    <version>10.0.0</version>
+    <scope>provided</scope>
+</dependency>
+        
+      <dependency>
+    <groupId>org.mariadb.jdbc</groupId>
+    <artifactId>mariadb-java-client</artifactId>
+    <version>3.3.3</version>
+</dependency>
         <!-- ============ Java EE 8 / Jakarta EE 8 (provided por GlassFish) ============ -->
         <dependency>
             <groupId>javax</groupId>
@@ -155,9 +168,7 @@
                                     </limits>
                                     <!-- Excluimos capas que no son logica de negocio testeable por unidad -->
                                     <excludes>
-                                        <exclude>mx/uaemex/arquitectura/controller/**</exclude>
-                                        <exclude>mx/uaemex/arquitectura/dao/**</exclude>
-                                        <exclude>mx/uaemex/arquitectura/model/**</exclude>
+                                        
                                     </excludes>
                                 </rule>
                             </rules>
