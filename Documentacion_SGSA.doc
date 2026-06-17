@@ -1,0 +1,165 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+    <meta charset="utf-8">
+    <title>Documentación SGSA</title>
+    <style>
+        body { font-family: Calibri, sans-serif; }
+        h1 { color: #2F5496; }
+        h2 { color: #2F5496; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<h1>Documentación del Proyecto SGSA</h1>
+
+<h2>1. Introducción</h2>
+<p>El Sistema de Gestión de Solicitudes Académicas (SGSA) es una aplicación web Java EE que automatiza la aprobación de trámites estudiantiles. Implementa una arquitectura <strong>N-Capas</strong> y utiliza patrones de diseño como Chain of Responsibility, Command y Singleton.</p>
+
+<h2>2. Diagramas UML</h2>
+
+<h3>2.1 Diagrama de Clases</h3>
+<p>Muestra las principales clases de la aplicación, abarcando Modelo, DAO, Servicios (Negocio) y Controladores (Presentación). A continuación se incluye el esquema (Mermaid):</p>
+<pre>
+classDiagram
+    class Solicitud {
+        -Long id
+        -String numeroCuenta
+        -TipoTramite tipoTramite
+        -String motivo
+        -EstadoSolicitud estado
+        -String resueltoPor
+        -LocalDateTime fechaRegistro
+    }
+    class SolicitudDAO {
+        &lt;&lt;interface&gt;&gt;
+        +guardar(Solicitud) Solicitud
+        +actualizar(Solicitud) Solicitud
+        +buscarPorId(Long) Solicitud
+        +listarTodas() List~Solicitud~
+    }
+    class SolicitudDAOImpl {
+        -EntityManager em
+    }
+    class SolicitudServicio {
+        -SolicitudDAO solicitudDAO
+        -InvocadorComandos invocador
+        +registrar(Solicitud) Solicitud
+        +aprobarManual(Solicitud) Solicitud
+        +rechazarManual(Solicitud) Solicitud
+    }
+    class TramiteBean {
+        -SolicitudServicio servicio
+        -Solicitud nuevaSolicitud
+        +registrarTramite()
+        +aprobar(Solicitud)
+        +rechazar(Solicitud)
+    }
+    
+    SolicitudDAO &lt;|.. SolicitudDAOImpl
+    SolicitudServicio --&gt; SolicitudDAO
+    SolicitudServicio --&gt; Solicitud
+    TramiteBean --&gt; SolicitudServicio
+    TramiteBean --&gt; Solicitud
+</pre>
+
+<h3>2.2 Diagrama de Secuencia (Registro de Trámite)</h3>
+<p>Muestra el flujo de ejecución desde que el usuario registra un trámite hasta que se guarda en la base de datos.</p>
+<pre>
+sequenceDiagram
+    actor Usuario
+    participant TramiteBean
+    participant SolicitudServicio
+    participant GeneradorFolios
+    participant CadenaResponsabilidad
+    participant SolicitudDAO
+    participant BaseDeDatos
+    
+    Usuario-&gt;&gt;TramiteBean: registrarTramite()
+    TramiteBean-&gt;&gt;SolicitudServicio: registrar(Solicitud)
+    SolicitudServicio-&gt;&gt;GeneradorFolios: siguienteFolio()
+    GeneradorFolios--&gt;&gt;SolicitudServicio: folio
+    SolicitudServicio-&gt;&gt;CadenaResponsabilidad: procesar(Solicitud)
+    CadenaResponsabilidad--&gt;&gt;SolicitudServicio: validacion
+    SolicitudServicio-&gt;&gt;SolicitudDAO: guardar(Solicitud)
+    SolicitudDAO-&gt;&gt;BaseDeDatos: persist()
+    BaseDeDatos--&gt;&gt;SolicitudDAO: success
+    SolicitudDAO--&gt;&gt;SolicitudServicio: Solicitud persistida
+    SolicitudServicio--&gt;&gt;TramiteBean: success
+    TramiteBean--&gt;&gt;Usuario: Muestra Mensaje de Éxito
+</pre>
+
+<h2>3. Base de Datos (Apache Derby)</h2>
+<p>La persistencia de datos se maneja mediante JPA y la base de datos subyacente es <strong>Apache Derby</strong>. A continuación se documenta el esquema de la tabla principal.</p>
+
+<h3>3.1 Tabla: SOLICITUD_TRAMITE</h3>
+<table>
+    <tr>
+        <th>Columna</th>
+        <th>Tipo de Dato</th>
+        <th>Nulo</th>
+        <th>Descripción</th>
+    </tr>
+    <tr>
+        <td><strong>ID</strong></td>
+        <td>BIGINT (PK)</td>
+        <td>No</td>
+        <td>Identificador único y autoincremental de la solicitud</td>
+    </tr>
+    <tr>
+        <td><strong>NUM_CUENTA</strong></td>
+        <td>VARCHAR(7)</td>
+        <td>No</td>
+        <td>Número de cuenta del alumno (7 dígitos)</td>
+    </tr>
+    <tr>
+        <td><strong>TIPO_TRAMITE</strong></td>
+        <td>VARCHAR(20)</td>
+        <td>No</td>
+        <td>Tipo de trámite solicitado (Enum)</td>
+    </tr>
+    <tr>
+        <td><strong>MOTIVO</strong></td>
+        <td>VARCHAR(255)</td>
+        <td>Sí</td>
+        <td>Justificación o motivo del trámite</td>
+    </tr>
+    <tr>
+        <td><strong>ESTADO</strong></td>
+        <td>VARCHAR(30)</td>
+        <td>No</td>
+        <td>Estado de la solicitud (PENDIENTE, APROBADO, etc.)</td>
+    </tr>
+    <tr>
+        <td><strong>RESUELTO_POR</strong></td>
+        <td>VARCHAR(60)</td>
+        <td>Sí</td>
+        <td>Nombre del administrador que procesó la solicitud</td>
+    </tr>
+    <tr>
+        <td><strong>FECHA_REGISTRO</strong></td>
+        <td>TIMESTAMP</td>
+        <td>No</td>
+        <td>Fecha y hora en que se creó la solicitud</td>
+    </tr>
+</table>
+
+<h3>3.2 Diagrama Entidad-Relación (ER)</h3>
+<pre>
+erDiagram
+    SOLICITUD_TRAMITE {
+        BIGINT ID PK
+        VARCHAR NUM_CUENTA
+        VARCHAR TIPO_TRAMITE
+        VARCHAR MOTIVO
+        VARCHAR ESTADO
+        VARCHAR RESUELTO_POR
+        TIMESTAMP FECHA_REGISTRO
+    }
+</pre>
+
+</body>
+</html>

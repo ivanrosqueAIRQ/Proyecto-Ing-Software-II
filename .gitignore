@@ -1,0 +1,39 @@
+# ===== Build de Maven =====
+target/
+*.war
+*.jar
+*.class
+
+# ===== JaCoCo =====
+jacoco.exec
+*.exec
+
+# ===== NetBeans =====
+nbproject/private/
+build/
+nbbuild/
+nbdist/
+.nb-gradle/
+nb-configuration.xml
+
+# ===== Eclipse =====
+.settings/
+.project
+.classpath
+.metadata/
+
+# ===== IntelliJ IDEA =====
+.idea/
+*.iml
+*.iws
+
+# ===== Apache Derby =====
+derby.log
+sgsaDB/
+
+# ===== Sistema operativo =====
+.DS_Store
+Thumbs.db
+
+# ===== Logs =====
+*.log
