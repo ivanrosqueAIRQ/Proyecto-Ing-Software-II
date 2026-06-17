@@ -50,7 +50,7 @@
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
             <version>${primefaces.version}</version>
-            <classifier>jakarta</classifier>
+            <!-- No usar classifier 'jakarta' con Java EE 8 (javax.*) -->
         </dependency>
 
         <!-- ============ Apache Derby (Base de datos embebida/red) ============ -->
@@ -175,6 +175,18 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- ============ OWASP Dependency-Check: detecta CVEs en dependencias ============ -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>10.0.3</version>
+                <configuration>
+                    <failBuildOnCVSS>7</failBuildOnCVSS>
+                    <suppressionFiles>
+                        <suppressionFile>dependency-check-suppressions.xml</suppressionFile>
+                    </suppressionFiles>
+                </configuration>
             </plugin>
         </plugins>
     </build>

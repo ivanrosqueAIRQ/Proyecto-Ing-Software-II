@@ -35,5 +35,16 @@ sgsaDB/
 .DS_Store
 Thumbs.db
 
-# ===== Logs =====
+# ===== Logs y artefactos de compilacion =====
 *.log
+compile_log.txt
+
+# ===== Secretos y credenciales =====
+.env
+.env.*
+*.secret
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore

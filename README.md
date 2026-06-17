@@ -65,9 +65,13 @@ asadmin multimode --file scripts/setup-derby.asadmin
      - `portNumber = 1527`
      - `databaseName = sgsaDB`
      - `connectionAttributes = ;create=true`
-     - `user = APP`
-     - `password = APP`
+     - `user =` *(usa el valor de la variable de entorno `DERBY_USER` o elige un nombre de usuario propio)*
+     - `password =` *(usa el valor de `DERBY_PASSWORD` — **nunca** uses contraseñas por defecto en producción)*
    - Da clic en **Ping** para verificar la conexión.
+
+> **Seguridad:** No uses credenciales por defecto como `APP/APP`. Configura
+> valores seguros mediante variables de entorno (`DERBY_USER`, `DERBY_PASSWORD`)
+> o un archivo `.env` local (ya excluido del repositorio por `.gitignore`).
 3. Ve a *Resources → JDBC → JDBC Resources → New*.
    - **JNDI Name:** `jdbc/sgsaDB`
    - **Pool Name:** `DerbyPool`
