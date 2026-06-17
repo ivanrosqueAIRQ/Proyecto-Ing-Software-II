@@ -178,5 +178,5 @@ SGSA/
 ---
 
 ## 👤 Autor
-**Sergio** — Ingeniería en Computación, UAEMex.
+**AIRQ** — Ingeniería en Computación, UAEMex.
 Proyecto final ISII 2026A. Profesor: Ing. Julio César Sarandingua Quintero.
